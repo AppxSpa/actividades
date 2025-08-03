@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.actividades.actividades.dto.InscripcionRequest;
 import com.actividades.actividades.dto.InscripcionResponse;
-import com.actividades.actividades.dto.PersonaResponse;
 import com.actividades.actividades.entities.Actividad;
 import com.actividades.actividades.entities.Inscripcion;
 import com.actividades.actividades.entities.Persona;
@@ -15,11 +14,9 @@ import com.actividades.actividades.exceptions.InscripcionException;
 import com.actividades.actividades.exceptions.InscripcionExceptionDuplicada;
 import com.actividades.actividades.repositories.ActividadRepository;
 import com.actividades.actividades.repositories.InscripcionRepository;
-import com.actividades.actividades.services.interfaces.ApiPersonaService;
 import com.actividades.actividades.services.interfaces.InscripcionService;
 import com.actividades.actividades.services.interfaces.PersonaService;
 import com.actividades.actividades.utils.RepositoryUtils;
-
 
 @Service
 public class InscripcionServiceImpl implements InscripcionService {
@@ -30,15 +27,15 @@ public class InscripcionServiceImpl implements InscripcionService {
 
     private final InscripcionRepository inscripcionRepository;
 
-    private final ApiPersonaService apiPersonaService;
+    private final InscripcionMapper inscripcionMapper;
 
     public InscripcionServiceImpl(PersonaService personaService,
-            ActividadRepository actividadRepository,
-            InscripcionRepository inscripcionRepository, ApiPersonaService apiPersonaService) {
+            ActividadRepository actividadRepository, InscripcionMapper inscripcionMapper,
+            InscripcionRepository inscripcionRepository) {
         this.actividadRepository = actividadRepository;
         this.inscripcionRepository = inscripcionRepository;
         this.personaService = personaService;
-        this.apiPersonaService = apiPersonaService;
+        this.inscripcionMapper = inscripcionMapper;
     }
 
     @Override
@@ -54,9 +51,7 @@ public class InscripcionServiceImpl implements InscripcionService {
             throw new InscripcionExceptionDuplicada("Ya existe una inscripcion para este rut en esta actividad");
         }
 
-        boolean hasCupos = (actividad.getCupo() - getQuantityInscripciones(actividad)) == 0;
-
-        if (hasCupos) {
+        if (hasCupos(actividad)) {
             throw new InscripcionException("No hay cupos disponibles");
         }
         Inscripcion inscripcion = new Inscripcion();
@@ -66,6 +61,10 @@ public class InscripcionServiceImpl implements InscripcionService {
 
         inscripcionRepository.save(inscripcion);
 
+    }
+
+    private boolean hasCupos(Actividad actividad) {
+        return (actividad.getCupo() - getQuantityInscripciones(actividad)) == 0;
     }
 
     @Override
@@ -87,27 +86,19 @@ public class InscripcionServiceImpl implements InscripcionService {
 
         List<Inscripcion> inscripciones = inscripcionRepository.findByActividad(actividad);
 
-        return mapInscripciones(inscripciones);
+        return inscripcionMapper.mapInscripciones(inscripciones);
 
     }
 
-    private List<InscripcionResponse> mapInscripciones(List<Inscripcion> inscripciones) {
-        return inscripciones.stream().map(inscripcion -> {
-            InscripcionResponse response = new InscripcionResponse();
+    @Override
+    public List<InscripcionResponse> getInscrpcionByRut(Integer rut) {
 
-            PersonaResponse personaResponse = apiPersonaService.getPersonaInfo(inscripcion.getRutPersona());
+        Persona persona = personaService.getOrCreatePersona(rut);
 
-            response.setIdActividad(inscripcion.getActividadId());
-            response.setNombreAlumno(personaResponse.getNombres());
-            response.setPaternoAlumno(personaResponse.getPaterno());
-            response.setMaternoAlumno(personaResponse.getMaterno());
-            response.setRut(personaResponse.getRut());
-            response.setVrut(personaResponse.getVrut());
-            response.setNombreActividad(inscripcion.getNombreActividad());
+        List<Inscripcion> inscripcion = inscripcionRepository.findByPersona(persona);
 
-            response.setFechaInscripcion(inscripcion.getFechaInscripcion());
-            return response;
-        }).toList();
+        return inscripcionMapper.mapInscripciones(inscripcion);
+
     }
 
 }

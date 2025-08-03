@@ -83,7 +83,7 @@ public class EncuestaController {
     }
 
     @GetMapping("/obtener")
-    public ResponseEntity<Object> getEncuesta( @RequestParam Long idActividad) {
+    public ResponseEntity<Object> getEncuesta(@RequestParam Long idActividad) {
 
         EncuestaDto response = encuestaService.getEncuestaByIdActividad(idActividad);
 

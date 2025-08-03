@@ -14,4 +14,6 @@ public interface InscripcionService {
 
     List<InscripcionResponse> getInscrpcionByActividad(Long idActidad);
 
+    List<InscripcionResponse> getInscrpcionByRut(Integer rut);
+
 }

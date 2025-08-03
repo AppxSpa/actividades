@@ -17,4 +17,6 @@ public interface ActividadService {
 
   void updateActividad(Long idActividad, ActividadRequest request);
 
+
+
 }
