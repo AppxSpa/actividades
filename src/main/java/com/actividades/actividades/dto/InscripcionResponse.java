@@ -4,30 +4,13 @@ import java.time.LocalDate;
 
 public class InscripcionResponse {
 
-    private Long idActividad;
-    private String nombreActividad;
     private Integer rut;
     private String vrut;
     private String nombreAlumno;
     private String paternoAlumno;
     private String maternoAlumno;
     private LocalDate fechaInscripcion;
-
-    public Long getIdActividad() {
-        return idActividad;
-    }
-
-    public void setIdActividad(Long idActividad) {
-        this.idActividad = idActividad;
-    }
-
-    public String getNombreActividad() {
-        return nombreActividad;
-    }
-
-    public void setNombreActividad(String nombreActividad) {
-        this.nombreActividad = nombreActividad;
-    }
+    private ActividadesList detalleActividad;
 
     public Integer getRut() {
         return rut;
@@ -75,6 +58,14 @@ public class InscripcionResponse {
 
     public void setFechaInscripcion(LocalDate fechaInscripcion) {
         this.fechaInscripcion = fechaInscripcion;
+    }
+
+    public ActividadesList getDetalleActividad() {
+        return detalleActividad;
+    }
+
+    public void setDetalleActividad(ActividadesList detalleActividad) {
+        this.detalleActividad = detalleActividad;
     }
 
 }

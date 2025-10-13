@@ -16,4 +16,6 @@ public interface SesionActividadRepository extends JpaRepository<SesionActividad
 
     Optional<SesionActividad> findByIdAndInicioRealAndFinRealIsNotNull(Long id, LocalDateTime fecha);
 
+    boolean existsByActividadIdAndInicioRealBetween(Long actividadId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+
 }

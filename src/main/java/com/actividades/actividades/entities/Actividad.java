@@ -193,4 +193,9 @@ public class Actividad {
         return this.encuesta != null ? this.encuesta.getId() : null;
     }
 
+    public void addFoto(FotoActividad foto) {
+        fotos.add(foto);
+        foto.setActividad(this);
+    }
+
 }

@@ -31,19 +31,30 @@ public class SesionActividadServiceImpl implements SesionActividadService {
         Actividad actividad = RepositoryUtils.findOrThrow(actividadRepository.findById(idActividad),
                 String.format("Actividad %d no encontrada", idActividad));
 
-        boolean haySesionActiva = haySesionActiva(idActividad);
-        if (haySesionActiva) {
+        // 1. Validar que no hay sesión activa
+        if (haySesionActiva(idActividad)) {
             throw new SesionActividadException("Ya existe una sesión activa para esta actividad");
         }
 
-        if (!estadSesionActividad(idActividad)) {
-            throw new SesionActividadException("No se puede volver a iniciar la misma Actividad");
+        // Obtener la fecha y hora actual
+        LocalDateTime now = getDateAndHourCurrent();
 
+        // 2. Validar que no puede iniciar la misma actividad en el mismo día
+        LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = now.toLocalDate().atTime(23, 59, 59, 999999999);
+
+        if (sesionActividadRepository.existsByActividadIdAndInicioRealBetween(idActividad, startOfDay, endOfDay)) {
+            throw new SesionActividadException("Ya se ha iniciado una sesión para esta actividad hoy.");
+        }
+
+        // 3. Validar que no puede iniciar antes de la fecha de la actividad
+        if (actividad.getFechaInicio() != null && now.toLocalDate().isBefore(actividad.getFechaInicio())) {
+            throw new SesionActividadException("No se puede iniciar la actividad antes de su fecha de inicio programada.");
         }
 
         SesionActividad sesion = new SesionActividad();
         sesion.setActividad(actividad);
-        sesion.setInicioReal(getDateAndHourCurrent());
+        sesion.setInicioReal(now);
         sesion.setFinReal(null);
 
         return sesionActividadRepository.save(sesion);
@@ -59,21 +70,14 @@ public class SesionActividadServiceImpl implements SesionActividadService {
         return sesionActividadRepository.save(sesion);
     }
 
-    private boolean haySesionActiva(Long idActividad){
+    public boolean haySesionActiva(Long idActividad){
 
        return sesionActividadRepository
                 .findFirstByActividadIdAndFinRealIsNullOrderByInicioRealDesc(idActividad)
                 .isPresent();
     }
 
-    @Override
-    public boolean estadSesionActividad(Long actividadId) {
-
-        return sesionActividadRepository
-                .findFirstByActividadIdAndFinRealIsNullOrderByInicioRealDesc(actividadId)
-                .isPresent();
-
-    }
+    
 
     private LocalDateTime getDateAndHourCurrent() {
 

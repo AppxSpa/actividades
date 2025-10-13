@@ -14,6 +14,7 @@ public class ActividadesList {
     private Double longitud;
     private Double latitud;
     private String estadoActividad;
+    private List<String> fotos;
 
     private List<HorarioDTO> horario;
 
@@ -152,6 +153,14 @@ public class ActividadesList {
 
     public void setEstadoActividad(String estadoActividad) {
         this.estadoActividad = estadoActividad;
+    }
+
+    public List<String> getFotos() {
+        return fotos;
+    }
+
+    public void setFotos(List<String> fotos) {
+        this.fotos = fotos;
     }
 
 }

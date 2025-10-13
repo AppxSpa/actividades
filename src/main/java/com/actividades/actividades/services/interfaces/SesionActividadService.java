@@ -8,6 +8,8 @@ public interface SesionActividadService {
 
     SesionActividad finalizarSesion(Long actividadId);
 
-    boolean estadSesionActividad(Long actividadId);
+    
+
+boolean haySesionActiva(Long idActividad);
 
 }

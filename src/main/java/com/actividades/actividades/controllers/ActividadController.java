@@ -1,5 +1,6 @@
 package com.actividades.actividades.controllers;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -93,10 +94,10 @@ public class ActividadController {
     @PostMapping(value = "/upload-foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> uploadFoto(
             @RequestParam Long idActividad,
-            @RequestParam(required = true) MultipartFile file) {
+            @RequestParam(required = true) List<MultipartFile> files) {
 
         try {
-            fotoActividaService.uploadFoto(idActividad, file);
+            fotoActividaService.uploadFoto(idActividad, files);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Foto agregada exitosamente"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
