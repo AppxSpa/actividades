@@ -17,7 +17,10 @@ public class Clasificacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombreClasificacion; 
+    private String nombreClasificacion;
+
+    @OneToMany(mappedBy = "clasificacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FotoClasificacion> fotos;
 
     
 
@@ -25,38 +28,36 @@ public class Clasificacion {
         return id;
     }
 
-
-
     public void setId(Long id) {
         this.id = id;
     }
-
-
 
     public String getNombreClasificacion() {
         return nombreClasificacion;
     }
 
-
-
     public void setNombreClasificacion(String nombreClasificacion) {
         this.nombreClasificacion = nombreClasificacion;
     }
-
-
 
     public List<Subclasificacion> getSubclasificaciones() {
         return subclasificaciones;
     }
 
-
-
     public void setSubclasificaciones(List<Subclasificacion> subclasificaciones) {
         this.subclasificaciones = subclasificaciones;
     }
 
-
-
     @OneToMany(mappedBy = "clasificacion", cascade = CascadeType.ALL)
     private List<Subclasificacion> subclasificaciones = new ArrayList<>();
+
+
+
+    public List<FotoClasificacion> getFotos() {
+        return fotos;
+    }
+
+    public void setFotos(List<FotoClasificacion> fotos) {
+        this.fotos = fotos;
+    }
 }
